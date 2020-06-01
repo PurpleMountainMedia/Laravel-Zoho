@@ -1,6 +1,6 @@
 {
-    "name": "chrisbraybrooke/chrisbraybrooke-package",
-    "description": "A package by Christian Braybrooke",
+    "name": "purplemountain/laravel-zoho",
+    "description": "Laravel wrapper for the Zoho PHP SDK",
     "authors": [
         {
             "name": "Christian Braybrooke",
@@ -9,14 +9,16 @@
     ],
     "autoload": {
         "psr-4": {
-            "ChrisBraybrooke\\NAMESPACE_HERE\\": "src/"
+            "PurpleMountain\\LaravelZoho\\": "src/"
         }
     },
-    "require": {},
+    "require": {
+        "zohocrm/php-sdk": "^2.1"
+    },
     "extra": {
         "laravel": {
             "providers": [
-                "ChrisBraybrooke\\NAMESPACE_HERE\\ServiceProvider"
+                "PurpleMountain\\LaravelZoho\\ServiceProvider"
             ]
         }
     }

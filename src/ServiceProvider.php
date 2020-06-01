@@ -1,13 +1,16 @@
 <?php
 
-namespace ChrisBraybrooke\SPABackend;
+namespace PurpleMountain\LaravelZoho;
 
-use ChrisBraybrooke\NAMESPACE_HERE\Providers\EventServiceProvider;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\FileSystem\FileSystem;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use PurpleMountain\LaravelZoho\LaravelZoho;
+use PurpleMountain\LaravelZoho\Providers\EventServiceProvider;
+use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
+use zcrmsdk\oauth\ZohoOAuth;
 
-class ServiceProvider extends ServiceProvider
+class ServiceProvider extends BaseServiceProvider
 {
     /** 
      * Put together the path to the config file.
@@ -26,7 +29,7 @@ class ServiceProvider extends ServiceProvider
      */
     private function shortName(): string
     {
-        return 'chrisbraybrooke-package';
+        return 'laravel-zoho';
     }
 
 
@@ -60,6 +63,26 @@ class ServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom($this->configPath(), $this->shortName());
 
+        $this->app->bind(ZohoOAuth::class, function ($app) {
+            ZCRMRestClient::initialize([
+                'client_id' => config('laravel-zoho.client_id'),
+                'client_secret' => config('laravel-zoho.client_secret'),
+                'redirect_uri' => config('laravel-zoho.redirect_uri'),
+                'currentUserEmail' => config('laravel-zoho.user_email'),
+            ]);
+            return new ZohoOAuth;
+        });
+
+        // $this->app->bind(ZohoOAuth::class, function ($app) {
+        //     ZCRMRestClient::initialize([
+        //         'client_id' => config('laravel-zoho.client_id'),
+        //         'client_secret' => config('laravel-zoho.client_secret'),
+        //         'redirect_uri' => config('laravel-zoho.redirect_uri'),
+        //         'currentUserEmail' => config('laravel-zoho.user_email'),
+        //     ]);
+        //     return new ZohoOAuth;
+        // });
+
         $this->app->register(EventServiceProvider::class);
     }
 
@@ -70,14 +93,9 @@ class ServiceProvider extends ServiceProvider
      */
     private function handleMigrations()
     {
-        $files = new FileSystem();
-        foreach ($files->glob('database/migrations/*_*.php') as $key => $file) {
-            $file->requireOnce($file);
-        }
-
-        $this->publishes([
-            __DIR__.'/../database/migrations/default.php.stub' => database_path('migrations/2020_03_15_000000_default.php')
-        ], $this->shortName() . '-migrations');
+        // $this->publishes([
+        //     __DIR__.'/../database/migrations/default.php.stub' => database_path('migrations/2020_03_15_000000_default.php')
+        // ], $this->shortName() . '-migrations');
     }
 
     /** 
@@ -89,7 +107,7 @@ class ServiceProvider extends ServiceProvider
     {
         Route::group([
             'name' => $this->shortName(),
-            'namespace' => 'ChrisBraybrooke\SPABackend\Http\Controllers',
+            'namespace' => 'PurpleMountain\LaravelZoho\Http\Controllers',
             'middleware' => ['web']
         ], function () {
             $this->loadRoutesFrom(__DIR__.'/../routes/web.php');

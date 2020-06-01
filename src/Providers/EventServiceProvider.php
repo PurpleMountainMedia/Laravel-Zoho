@@ -1,6 +1,6 @@
 <?php
 
-namespace ChrisBraybrooke\NAMESPACE_HERE\Providers;
+namespace PurpleMountain\LaravelZoho\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as BaseProvider;
 

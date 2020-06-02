@@ -1,48 +1,30 @@
-# Laravel-Package-Template
-A template for creating laravel packages
+# Laravel Zoho
+A lightweight (for now) wrapper around the Zoho PHP SDK
 
 ## Installation
 
 ```
-git clone git@github.com:ChrisBraybrooke/Laravel-Package-Template.git package-name
-cd package-name
-git remote set-url origin new-url.git
-git push -u origin master
+composer require purplemountain/laravel-zoho
 ```
 
 ## Setup
-1. Open up `composer.json` and replace the name for the name of this package. You can also give it a description.
+1. If you haven't already, you need to create an Oauth2 client within Zoho. This can be done [here](https://api-console.zoho.com/).
 
-2. Do a find and replace across the whole package (including the pre mentioned `composer.json` file) for `NAMESPACE_HERE` which should be replaced with the package name in PascalCase. i.e AwesomePackage.
+2. You want to choose a "Server-based Application" client within Zoho.
 
-3. Open the `ServiceProvider.php` file and replace the string returned by `shortName` method with the name you put in the `composer.json`.
+3. For the "Authorized Redirect URIs" entry, you need to add `your-app-domain.tld/oauth/zoho`. Don't worry we handle this route for you within your app.
 
-4. If you need a config file, you should also rename the `config/chrisbraybrooke-package.php` filename with the string returned by `shortName`.
-
-## Working on Package
-You will need a 'host' project, this could be a blank laravel install or another project.
+## Env
+You will need to add the following details to your `.env` file and paste in the values from Zoho.
 
 ```
-cd host-project
-vim composer.json
+ZOHO_CLIENT_ID=
+ZOHO_CLIENT_SECRET=
+ZOHO_USER_EMAIL=
 ```
 
-Then paste the following anywhere in the file.
+## Authorization
+You need to authorize your app to access Zoho. You can do this by simply running `php artisan zoho:url` which will generate the url to authorize the app. Follow the prompts and you'll be be all set.
 
-```
-"repositories": {
-    "chrisbraybrooke/package-name": {
-        "type": "path",
-        "url": "package-url-on-filesystem",
-        "options": {
-            "symlink": true
-        }
-    }
-}
-```
-
-Finally install the package on the host project
-
-```
-composer require chrisbraybrooke/package-name
-```
+## Refreshing Tokens
+Zoho tokens last for aprox 1 hour. To refresh the token using the refresh token provided, you can run `php artisan zoho:refresh`. We reccomend setting this up to be run every 5 minutes in your `App\Console\Kernel.php` file.

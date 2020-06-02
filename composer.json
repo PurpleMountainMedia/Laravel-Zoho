@@ -19,7 +19,10 @@
         "laravel": {
             "providers": [
                 "PurpleMountain\\LaravelZoho\\ServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "LaravelZoho": "PurpleMountain\\LaravelZoho\\Facade"
+            }
         }
     }
 }

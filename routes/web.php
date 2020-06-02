@@ -11,4 +11,4 @@
 |
 */
 
-// Route::get('foo', 'BarController');
+Route::get('oauth/zoho', 'ZohoOauthCallbackController');

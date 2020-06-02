@@ -7,5 +7,7 @@ return [
 
     'redirect_uri' => env('ZOHO_CLIENT_REDIRECT_URI', 'https://engine.havebike.test/oauth/zoho'),
 
+    'default_scope' => env('ZOHO_DEFAULT_SCOPE', 'ZohoCRM.modules.ALL,AAAserver.profile.Read'),
+
     'user_email' => env('ZOHO_USER_EMAIL', null)
 ];

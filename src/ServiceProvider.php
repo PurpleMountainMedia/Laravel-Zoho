@@ -141,7 +141,7 @@ class ServiceProvider extends BaseServiceProvider
             'redirect_uri' => config('laravel-zoho.redirect_uri'),
             'currentUserEmail' => config('laravel-zoho.user_email'),
             'persistence_handler_class_name' => ZohoOauthConfigRepository::class,
-            'persistence_handler_class' => '/Users/christianbraybrooke/local_sites/engine.havebike/packages/laravel-zoho/src/Repositories/ZohoOauthConfigRepository.php'
+            'persistence_handler_class' => base_path('vendor/purplemountain/laravel-zoho/src/Repositories/ZohoOauthConfigRepository.php')
         ]);
     }
 }

@@ -19,6 +19,7 @@ class ZohoOauthCallbackController extends Controller
         try {
             $oAuthClient = $zohoAuth::getClientInstance();
             $grantToken = $request->get('code');
+            $oAuthClient->generateAccessToken($grantToken);
             return redirect()->route('home')->with([
                 'status' => 'Successfully authenticated with Zoho!'
             ]);

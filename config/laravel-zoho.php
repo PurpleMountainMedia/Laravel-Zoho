@@ -9,5 +9,9 @@ return [
 
     'default_scope' => env('ZOHO_DEFAULT_SCOPE', 'ZohoCRM.modules.ALL,AAAserver.profile.Read'),
 
-    'user_email' => env('ZOHO_USER_EMAIL', null)
+    'user_email' => env('ZOHO_USER_EMAIL', null),
+
+    'accounts_url' => 'https://accounts.zoho.com',
+
+    'api_base_url' => 'www.zohoapis.com',
 ];

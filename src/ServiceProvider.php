@@ -125,7 +125,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->publishes([
             $this->configPath(),
             $this->shortName() . '-config'
-        ]);
+        ], $this->shortName() . '-config');
     }
 
     /**
@@ -136,6 +136,8 @@ class ServiceProvider extends BaseServiceProvider
     private function initZohoClient()
     {
         return ZCRMRestClient::initialize([
+            'accounts_url' => config('laravel-zoho.accounts_url'),
+            'apiBaseUrl' => config('laravel-zoho.api_base_url'),
             'client_id' => config('laravel-zoho.client_id'),
             'client_secret' => config('laravel-zoho.client_secret'),
             'redirect_uri' => config('laravel-zoho.redirect_uri'),

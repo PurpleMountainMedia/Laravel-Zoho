@@ -18,7 +18,6 @@ class ZohoOauthConfigRepository implements ZohoOAuthPersistenceInterface
     public function saveOAuthData($tokens)
     {
         return ZohoConfig::create([
-            'client_id' => config('laravel-zoho.client_id'),
             'user_identifier' => $tokens->getUserEmailId(),
             'access_token' => $tokens->getAccessToken(),
             'refresh_token' => $tokens->getRefreshToken(),
@@ -34,7 +33,7 @@ class ZohoOauthConfigRepository implements ZohoOAuthPersistenceInterface
      */
     public function deleteOAuthTokens($userEmailId)
     {
-        ZohoConfig::where('client_id', config('laravel-zoho.client_id'))->delete();
+        ZohoConfig::where('user_identifier', $userEmailId))->delete();
     }
 
     /**
@@ -45,7 +44,7 @@ class ZohoOauthConfigRepository implements ZohoOAuthPersistenceInterface
      */
     public function getOAuthTokens($userEmailId)
     {
-        $config = ZohoConfig::where('client_id', config('laravel-zoho.client_id'))->latest()->first();
+        $config = ZohoConfig::where('user_identifier', $userEmailId)->latest()->first();
         $tokens = new ZohoOAuthTokens;
 
         $tokens->setRefreshToken(optional($config)->refresh_token);

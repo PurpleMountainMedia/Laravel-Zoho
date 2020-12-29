@@ -60,8 +60,10 @@ class LaravelZoho
      *
      * @return string
      */
-    public function getOauthRedirectUrl()
+    public function getOauthRedirectUrl($userEmailId)
     {
-        return $this->zohoAuth::getGrantURL() . '?client_id=' . $this->zohoAuth::getClientID() . "&scope={$this->scope}&response_type=code&access_type=offline&redirect_uri=" . $this->zohoAuth::getRedirectURL();
+        $state = Str::random(20);
+        session(["zoho-user.{$state}" => $userEmailId]);
+        return $this->zohoAuth::getGrantURL() . '?client_id=' . $this->zohoAuth::getClientID() . "&scope={$this->scope}&response_type=code&access_type=offline&redirect_uri=" . $this->zohoAuth::getRedirectURL() . "&state={$state}";
     }
 }

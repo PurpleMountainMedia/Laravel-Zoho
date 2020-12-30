@@ -3,6 +3,7 @@
 namespace PurpleMountain\LaravelZoho;
 
 use zcrmsdk\oauth\ZohoOAuth;
+use Illuminate\Support\Str;
 
 class LaravelZoho
 {
@@ -21,14 +22,23 @@ class LaravelZoho
     protected $scope;
 
     /**
+     * The user.
+     *
+     * @var string
+     */
+    protected $userEmailId;
+
+    /**
      * Kick things off!
      *
      * @param \zcrmsdk\oauth\ZohoOAuth $zohoAuth
      */
-    public function __construct(ZohoOAuth $zohoAuth, $scope)
+    public function __construct(ZohoOAuth $zohoAuth, $client)
     {
         $this->setZohoAuth($zohoAuth);
-        $this->scope($scope);
+        $this->setScope($client['default_scope']);
+        $this->setUserEmailId($client['user_email']);
+        $this->setApiBaseUrl($client['api_base_url']);
     }
 
     /**
@@ -44,15 +54,50 @@ class LaravelZoho
     }
 
     /**
+     * Set the user.
+     *
+     * @param string $scope
+     * @return \PurpleMountain\LaravelZoho\LaravelZoho
+     */
+    public function setUserEmailId($userEmailId)
+    {
+        $this->userEmailId = $userEmailId;
+        return $this;
+    }
+
+
+    /**
      * Set the scope.
      *
      * @param string $scope
      * @return \PurpleMountain\LaravelZoho\LaravelZoho
      */
-    public function scope($scope)
+    public function setScope($scope)
     {
         $this->scope = $scope;
         return $this;
+    }
+
+    /**
+     * Set the api base url.
+     *
+     * @param string $apiBaseUrl
+     * @return \PurpleMountain\LaravelZoho\LaravelZoho
+     */
+    public function setApiBaseUrl($apiBaseUrl)
+    {
+        $this->apiBaseUrl = $apiBaseUrl;
+        return $this;
+    }
+
+    /**
+     * Get the api base url.
+     *
+     * @return string
+     */
+    public function getApiBaseUrl()
+    {
+        return $this->apiBaseUrl;
     }
 
     /**
@@ -60,10 +105,10 @@ class LaravelZoho
      *
      * @return string
      */
-    public function getOauthRedirectUrl($userEmailId)
+    public function getOauthRedirectUrl()
     {
         $state = Str::random(20);
-        session(["zoho-user.{$state}" => $userEmailId]);
+        session(["zoho-user.{$state}" => $this->userEmailId]);
         return $this->zohoAuth::getGrantURL() . '?client_id=' . $this->zohoAuth::getClientID() . "&scope={$this->scope}&response_type=code&access_type=offline&redirect_uri=" . $this->zohoAuth::getRedirectURL() . "&state={$state}";
     }
 }

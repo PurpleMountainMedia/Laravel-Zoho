@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'default_export_user' => env('ZOHO_USER_EMAIL', null),
+
+    'default_import_user' => env('ZOHO_USER_EMAIL', null),
+
     'clients' => [
       [
         'client_id' => env('ZOHO_CLIENT_ID', null),

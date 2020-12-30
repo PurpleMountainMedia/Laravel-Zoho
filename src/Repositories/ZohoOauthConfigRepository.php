@@ -33,7 +33,7 @@ class ZohoOauthConfigRepository implements ZohoOAuthPersistenceInterface
      */
     public function deleteOAuthTokens($userEmailId)
     {
-        ZohoConfig::where('user_identifier', $userEmailId))->delete();
+        ZohoConfig::where('user_identifier', $userEmailId)->delete();
     }
 
     /**

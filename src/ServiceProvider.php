@@ -12,6 +12,7 @@ use PurpleMountain\LaravelZoho\Providers\EventServiceProvider;
 use PurpleMountain\LaravelZoho\Repositories\ZohoOauthConfigRepository;
 use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
 use zcrmsdk\oauth\ZohoOAuth;
+use Illuminate\Support\Arr;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -68,18 +69,19 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom($this->configPath(), $this->shortName());
         $this->app->register(EventServiceProvider::class);
 
-        $this->app->bind(ZohoOAuth::class, function ($app) {
-            $this->initZohoClient();
+        $this->app->bind(ZohoOAuth::class, function ($app, $config) {
+            $this->initZohoClient($config);
             return new ZohoOAuth;
         });
 
-        $this->app->bind(ZCRMRestClient::class, function ($app) {
-            $this->initZohoClient();
+        $this->app->bind(ZCRMRestClient::class, function ($app, $config) {
+            $this->initZohoClient($config);
             return ZCRMRestClient::class;
         });
 
-        $this->app->bind(LaravelZoho::class, function ($app) {
-            return new LaravelZoho($app->make(ZohoOAuth::class), config('laravel-zoho.default_scope'));
+        $this->app->bind(LaravelZoho::class, function ($app, $config) {
+            $client = $this->findClientFromConfig($config);
+            return new LaravelZoho($app->make(ZohoOAuth::class, $config), $client);
         });
 
         $this->app->bind('laravel-zoho', function ($app) {
@@ -129,19 +131,55 @@ class ServiceProvider extends BaseServiceProvider
     }
 
     /**
+     * Find information about the Zoho client
+     *
+     * @param  array $config
+     * @return array
+     */
+    private function findClientFromConfig($config)
+    {
+        return $this->findClientFromUserEmailId($config['userEmailId'] ?? null);
+    }
+
+    /**
+     * Find information about the Zoho client
+     *
+     * @param  String $userEmailId
+     * @return array
+     */
+    private function findClientFromUserEmailId($userEmailId)
+    {
+        $client = Arr::where(config('laravel-zoho.clients'), function ($client) use ($userEmailId) {
+            return $client['user_email'] === $userEmailId;
+        });
+        $client = Arr::first($client);
+
+        if (!is_null($userEmailId) && !$client) {
+            $client = Arr::first(config('laravel-zoho.clients'));
+        }
+
+        if (!$client) {
+            throw new \Exception("Zoho client not found, please ensure this has been added to config.", 500);
+        }
+
+        return $client;
+    }
+
+    /**
      * Initialize the zoho client.
      *
      * @return \ZCRMRestClient
      */
-    private function initZohoClient()
+    private function initZohoClient($config)
     {
+        $client = $this->findClientFromConfig($config);
         return ZCRMRestClient::initialize([
-            'accounts_url' => config('laravel-zoho.accounts_url'),
-            'apiBaseUrl' => config('laravel-zoho.api_base_url'),
-            'client_id' => config('laravel-zoho.client_id'),
-            'client_secret' => config('laravel-zoho.client_secret'),
-            'redirect_uri' => config('laravel-zoho.redirect_uri'),
-            'currentUserEmail' => config('laravel-zoho.user_email'),
+            'accounts_url' => $client['accounts_url'],
+            'apiBaseUrl' => $client['api_base_url'],
+            'client_id' => $client['client_id'],
+            'client_secret' => $client['client_secret'],
+            'redirect_uri' => $client['redirect_uri'],
+            'currentUserEmail' => $client['user_email'],
             'persistence_handler_class_name' => ZohoOauthConfigRepository::class,
             'persistence_handler_class' => base_path('vendor/purplemountain/laravel-zoho/src/Repositories/ZohoOauthConfigRepository.php')
         ]);

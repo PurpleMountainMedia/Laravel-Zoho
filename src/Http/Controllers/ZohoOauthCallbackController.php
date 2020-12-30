@@ -14,12 +14,14 @@ class ZohoOauthCallbackController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function __invoke(Request $request, ZohoOAuth $zohoAuth)
+    public function __invoke(Request $request)
     {
         try {
-            $oAuthClient = $zohoAuth::getClientInstance();
-            $grantToken = $request->get('code');
-            $oAuthClient->generateAccessToken($grantToken);
+            $state = $request->get('state');
+            $zohoAuth = app(ZohoOAuth::class, ['userEmailId' => $request->session()->pull("zoho-user.{$state}")]);
+            $zohoAuth::getClientInstance()->generateAccessToken(
+                $request->get('code')
+            );
             return redirect()->route('home')->with([
                 'status' => 'Successfully authenticated with Zoho!'
             ]);

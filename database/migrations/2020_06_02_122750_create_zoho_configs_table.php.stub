@@ -15,7 +15,6 @@ class CreateZohoConfigsTable extends Migration
     {
         Schema::create('zoho_configs', function (Blueprint $table) {
             $table->id();
-            $table->string('client_id');
             $table->string('user_identifier')->nullable()->default(null);
             $table->string('access_token')->nullable()->default(null);
             $table->string('refresh_token')->nullable()->default(null);

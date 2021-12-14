@@ -18,6 +18,7 @@ class ZohoOauthConfigRepository implements ZohoOAuthPersistenceInterface
     public function saveOAuthData($tokens)
     {
         return ZohoConfig::create([
+            'client_id' => config('laravel-zoho.clients.0.client_id'),
             'user_identifier' => $tokens->getUserEmailId(),
             'access_token' => $tokens->getAccessToken(),
             'refresh_token' => $tokens->getRefreshToken(),

@@ -154,7 +154,7 @@ class ServiceProvider extends BaseServiceProvider
         });
         $client = Arr::first($client);
 
-        if (!is_null($userEmailId) && !$client) {
+        if (is_null($userEmailId) && !$client) {
             $client = Arr::first(config('laravel-zoho.clients'));
         }
 
